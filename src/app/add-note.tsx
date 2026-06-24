@@ -250,7 +250,11 @@ export default function AddNoteScreen() {
       <CameraView ref={cameraRef} style={styles.camera} facing={facing} />
 
       {/* Overlay positioned absolutely over the camera preview */}
-      <SafeAreaView style={styles.cameraOverlay} edges={["top"]} pointerEvents="box-none">
+      <SafeAreaView
+        style={styles.cameraOverlay}
+        edges={["top"]}
+        pointerEvents="box-none"
+      >
         <View style={styles.cameraHeader}>
           <Pressable
             onPress={() => router.back()}
@@ -282,7 +286,10 @@ export default function AddNoteScreen() {
           <View style={styles.simulatorBanner}>
             <ThemedText style={styles.simulatorBannerText}>
               📵 Camera preview is not available in the Simulator.{"\n"}
-              Tap <ThemedText style={styles.simulatorBannerBold}>📷</ThemedText> to pick a photo from your library.
+              Tap <ThemedText style={styles.simulatorBannerBold}>
+                📷
+              </ThemedText>{" "}
+              to pick a photo from your library.
             </ThemedText>
           </View>
         )}
