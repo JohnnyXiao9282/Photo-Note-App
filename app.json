@@ -8,7 +8,12 @@
     "scheme": "photonoteapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to take photos for your notes.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select photos for your notes."
+      },
+      "bundleIdentifier": "com.johnnyxiao.photo-note-app"
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +22,14 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "output": "static",
@@ -25,6 +37,18 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to take photos for your notes."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to select images for your notes."
+        }
+      ],
       [
         "expo-splash-screen",
         {
