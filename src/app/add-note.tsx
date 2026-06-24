@@ -1,4 +1,5 @@
 import { type CameraType, CameraView, useCameraPermissions } from "expo-camera";
+import * as Device from "expo-device";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -20,6 +21,9 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Spacing } from "@/constants/theme";
 import { storageService } from "@/services/storage";
+
+// True on a real device, false on iOS Simulator / Android Emulator
+const isSimulator = !Device.isDevice;
 
 export default function AddNoteScreen() {
   const router = useRouter();
@@ -242,36 +246,47 @@ export default function AddNoteScreen() {
   // Show camera
   return (
     <ThemedView style={styles.container}>
-      <CameraView ref={cameraRef} style={styles.camera} facing={facing}>
-        <SafeAreaView style={styles.cameraOverlay} edges={["top"]}>
-          <View style={styles.cameraHeader}>
-            <Pressable
-              onPress={() => router.back()}
-              style={styles.cameraHeaderButton}
-            >
-              <ThemedText style={styles.cameraHeaderText}>✕</ThemedText>
-            </Pressable>
-            <Pressable
-              onPress={toggleCameraFacing}
-              style={styles.cameraHeaderButton}
-            >
-              <ThemedText style={styles.cameraHeaderText}>⟲</ThemedText>
-            </Pressable>
+      {/* CameraView must have NO children — overlay sits absolutely on top */}
+      <CameraView ref={cameraRef} style={styles.camera} facing={facing} />
+
+      {/* Overlay positioned absolutely over the camera preview */}
+      <SafeAreaView style={styles.cameraOverlay} edges={["top"]} pointerEvents="box-none">
+        <View style={styles.cameraHeader}>
+          <Pressable
+            onPress={() => router.back()}
+            style={styles.cameraHeaderButton}
+          >
+            <ThemedText style={styles.cameraHeaderText}>✕</ThemedText>
+          </Pressable>
+          <Pressable
+            onPress={toggleCameraFacing}
+            style={styles.cameraHeaderButton}
+          >
+            <ThemedText style={styles.cameraHeaderText}>⟲</ThemedText>
+          </Pressable>
+        </View>
+
+        <View style={styles.cameraFooter}>
+          <Pressable style={styles.galleryButton} onPress={pickImage}>
+            <ThemedText style={styles.galleryButtonText}>📷</ThemedText>
+          </Pressable>
+
+          <Pressable style={styles.captureButton} onPress={takePicture}>
+            <View style={styles.captureButtonInner} />
+          </Pressable>
+
+          <View style={styles.galleryButton} />
+        </View>
+
+        {isSimulator && (
+          <View style={styles.simulatorBanner}>
+            <ThemedText style={styles.simulatorBannerText}>
+              📵 Camera preview is not available in the Simulator.{"\n"}
+              Tap <ThemedText style={styles.simulatorBannerBold}>📷</ThemedText> to pick a photo from your library.
+            </ThemedText>
           </View>
-
-          <View style={styles.cameraFooter}>
-            <Pressable style={styles.galleryButton} onPress={pickImage}>
-              <ThemedText style={styles.galleryButtonText}>📷</ThemedText>
-            </Pressable>
-
-            <Pressable style={styles.captureButton} onPress={takePicture}>
-              <View style={styles.captureButtonInner} />
-            </Pressable>
-
-            <View style={styles.galleryButton} />
-          </View>
-        </SafeAreaView>
-      </CameraView>
+        )}
+      </SafeAreaView>
     </ThemedView>
   );
 }
@@ -297,7 +312,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cameraOverlay: {
-    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: "space-between",
   },
   cameraHeader: {
@@ -430,5 +449,26 @@ const styles = StyleSheet.create({
   },
   required: {
     color: "#FF3B30",
+  },
+  simulatorBanner: {
+    position: "absolute",
+    bottom: 120,
+    left: 16,
+    right: 16,
+    backgroundColor: "rgba(0,0,0,0.75)",
+    borderRadius: 10,
+    padding: 14,
+    alignItems: "center",
+  },
+  simulatorBannerText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    textAlign: "center",
+    lineHeight: 22,
+  },
+  simulatorBannerBold: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: 16,
   },
 });
